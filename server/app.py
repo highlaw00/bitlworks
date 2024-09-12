@@ -6,7 +6,7 @@ from PIL import Image
 UPLOAD_FOLDER = "/app/assets"
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
-model = torch.hub.load("./yolov5", 'custom', path='./custom_yolo.pt', source='local')
+YOLO_MODEL = torch.hub.load("./yolov5", 'custom', path='./custom_yolo.pt', source='local')
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -32,8 +32,9 @@ def upload():
             #TODO: inference!
             filename = secure_filename(file.filename)
             img = Image.open(file)
-            result = model(img)
-            return filename
+            result = YOLO_MODEL(img)
+            return result.pandas().xyxy[0].to_dict()
+            # return "암튼 추론함"
 
 
 if __name__ == '__main__':
